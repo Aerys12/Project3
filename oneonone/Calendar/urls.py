@@ -3,7 +3,7 @@ from .views.CalendarViews import CalendarCreateView, CalendarsView, \
     CalendarUpdateView, CalendarDetailsView, CalendarDeleteView
 
 from .views.MeetingViews import MeetingCreateView, MeetingDetailsView, \
-    MeetingUpdateView, MeetingDeleteView, MeetingTimeSuggestionView, MeetingsView
+    MeetingUpdateView, MeetingDeleteView, MeetingTimeSuggestionView, MeetingsView, MeetingNotifyView
 
 app_name = 'Calendar'
 urlpatterns = [
@@ -36,5 +36,8 @@ urlpatterns = [
     path('<int:calendar_id>/meetings/<int:meeting_id>/edit/',
          MeetingUpdateView.as_view(), name='meeting_edit'),
     #USED to view suggested times for calendar and meeting
-    path('<int:calendar_id>/meetings/<int:meeting_id>/suggest-time/', MeetingTimeSuggestionView.as_view(), name='meeting-time-suggestion')
+    path('<int:calendar_id>/meetings/<int:meeting_id>/suggest-time/', MeetingTimeSuggestionView.as_view(), name='meeting-time-suggestion'),
+    #USED to notify the user to book the meeting
+    #POST
+    path('<int:calendar_id>/meetings/<int:meeting_id>/notify/', MeetingNotifyView.as_view(), name='meeting_notify')
 ]

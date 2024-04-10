@@ -13,7 +13,6 @@ class CalendarCreateView(CreateAPIView):
     View for creating a new calendar.
     """
     permission_classes = [IsAuthenticated]
-    queryset = Calendar.objects.all()
     serializer_class = CalendarCreateSerializer
 
     def perform_create(self, serializer):

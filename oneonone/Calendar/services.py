@@ -3,7 +3,8 @@ from .models.meetingAvailability import MeetingAvailability
 from datetime import timedelta
 from typing import List
 
-
+import smtplib
+from email.mime.text import MIMEText
 def suggestionTimes(calendar_availabilities: List[Availability],
                     meeting_availabilities: List[MeetingAvailability],
                     meeting_duration: int):
@@ -43,3 +44,41 @@ def suggestionTimes(calendar_availabilities: List[Availability],
         }
 
     return {}
+
+
+smtp_server = "smtp-mail.outlook.com"
+smtp_port = 587
+username = "oneononealert@outlook.com"
+password = "whddms0301!"
+email_from = "oneononealert@outlook.com"
+
+def SendEmail(email_to: str, inviter: str, meeting_title: str, url: str):
+    email_subject = f'NEW MEETING INVITE: {meeting_title}'
+    co_msg = f'Hey. You have been invited to a Meeting: "{meeting_title}" with {inviter}. \n Click the link below for more details. \n {url}'
+    msg = MIMEText(co_msg)
+    msg['Subject'] = email_subject
+    msg['From'] = email_from
+    msg['To'] = email_to
+    debuglevel = True
+    mail = smtplib.SMTP(smtp_server, smtp_port)
+    mail.set_debuglevel(debuglevel)
+    mail.starttls()
+    mail.login(username, password)
+    mail.sendmail(email_from, email_to, msg.as_string())
+    mail.quit()
+
+
+def SendNotification(email_to: str, inviter: str, meeting_title: str, url: str):
+    email_subject = f'MEETING REMINDER: {meeting_title}'
+    co_msg = f'Hey. {inviter} is waiting for you to book the meeting.\n Click the link below for more details. \n {url}'
+    msg = MIMEText(co_msg)
+    msg['Subject'] = email_subject
+    msg['From'] = email_from
+    msg['To'] = email_to
+    debuglevel = True
+    mail = smtplib.SMTP(smtp_server, smtp_port)
+    mail.set_debuglevel(debuglevel)
+    mail.starttls()
+    mail.login(username, password)
+    mail.sendmail(email_from, email_to, msg.as_string())
+    mail.quit()

@@ -15,18 +15,18 @@ class MeetingCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Meeting
-        fields = ["receiver_email", "receiver", "availability_meeting"]
+        fields = ["receiver_email", "receiver"]
         extra_kwargs = {
             "receiver_email": {"required": True},
         }
 
     def create(self, validated_data):
-        availability_meeting_data = validated_data.pop("availability_meeting",
-                                                       [])
         meeting = Meeting.objects.create(**validated_data)
-        for availability_data in availability_meeting_data:
-            MeetingAvailability.objects.create(meeting=meeting,
-                                               **availability_data)
+
+        base_url = 'http://127.0.0.1:8000'  # Consider using settings to manage domain
+        meeting_url = f"{base_url}/Calendar/{meeting.calendar.pk}/meetings/{meeting.id}/details/"
+        meeting.url = meeting_url
+        meeting.save()
         return meeting
 
 
@@ -77,7 +77,6 @@ class MeetingUpdateSerializer(serializers.ModelSerializer):
         if availabilities_to_delete:
             MeetingAvailability.objects.filter(
                 id__in=availabilities_to_delete).delete()
-
         return instance
 
 
@@ -89,7 +88,7 @@ class MeetingCalendarViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = ["id", "receiver_email", "receiver", "start_time", "status",
-                  "availability_meeting", "calendar"]
+                  "url", "availability_meeting", "calendar"]
         extra_kwargs = {'id': {'read_only': True}}
 
 
@@ -97,5 +96,6 @@ class MeetingViewSerializer(serializers.ModelSerializer):
     #availability_meeting = MeetingAvailabilityViewSerializer(many=True, read_only=True)
     class Meta:
         model = Meeting
-        fields = ["id", "receiver_email", "receiver", "start_time", "status"]
+        fields = ["id", "receiver_email", "receiver", "start_time", "status",
+                  "url"]
         extra_kwargs = {'id': {'read_only': True}}
