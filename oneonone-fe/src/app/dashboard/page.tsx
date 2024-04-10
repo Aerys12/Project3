@@ -1,6 +1,6 @@
 "use client";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
 	fetchCalendarData,
 	handleDeleteCalendar,
@@ -24,6 +24,7 @@ interface Contact {
 }
 
 export default function Dashboard() {
+	const modalRef = useRef(null);
 	const [calendarData, setCalendarData] = useState<CalendarType[]>([]);
 	const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(
 		null
@@ -56,17 +57,17 @@ export default function Dashboard() {
 	const handleButtonClick = () => {
 		if (email && selectedCalendarId) {
 			const data = {
-                receiver_email: email
-              };
-              shareEmail(data, selectedCalendarId);
+				receiver_email: email,
+			};
+			shareEmail(data, selectedCalendarId);
 		}
 		// If a contact is selected, share the calendar with the contact
 		if (shareData && selectedCalendarId) {
 			const data = {
 				receiver: shareData.receiver,
-                receiver_email: shareData.receiver_email,
+				receiver_email: shareData.receiver_email,
 			};
-            shareToContacts(data, selectedCalendarId);
+			shareToContacts(data, selectedCalendarId);
 			// Send the data. This could be a fetch or axios call, for example.
 		}
 	};
@@ -211,12 +212,13 @@ export default function Dashboard() {
 				tabIndex={-1}
 				aria-labelledby='shareMeetingModalLabel'
 				aria-hidden='true'
+				ref={modalRef}
 			>
 				<div className='modal-dialog'>
 					<div className='modal-content'>
 						<div className='modal-header'>
 							<h5 className='modal-title' id='deleteMeetingModalLabel'>
-								Share Link
+								Share Calendar
 							</h5>
 							<button
 								type='button'
@@ -239,8 +241,13 @@ export default function Dashboard() {
 								/>
 								<button
 									className='btn btn-primary'
+									data-bs-dismiss='modal'
 									id='addon-wrapping'
-									onClick={handleButtonClick}
+									onClick={() => {
+										handleButtonClick();
+										if (modalRef.current !== null) {
+										}
+									}}
 								>
 									<i className='bi bi-send'></i>
 								</button>
