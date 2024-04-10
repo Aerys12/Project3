@@ -5,7 +5,8 @@ from typing import List
 
 import smtplib
 from email.mime.text import MIMEText
-def suggestionTimes(calendar_availabilities: List[Availability],
+
+def SuggestionTimes(calendar_availabilities: List[Availability],
                     meeting_availabilities: List[MeetingAvailability],
                     meeting_duration: int):
     intersections = []
@@ -71,6 +72,22 @@ def SendEmail(email_to: str, inviter: str, meeting_title: str, url: str):
 def SendNotification(email_to: str, inviter: str, meeting_title: str, url: str):
     email_subject = f'MEETING REMINDER: {meeting_title}'
     co_msg = f'Hey. {inviter} is waiting for you to book the meeting.\n Click the link below for more details. \n {url}'
+    msg = MIMEText(co_msg)
+    msg['Subject'] = email_subject
+    msg['From'] = email_from
+    msg['To'] = email_to
+    debuglevel = True
+    mail = smtplib.SMTP(smtp_server, smtp_port)
+    mail.set_debuglevel(debuglevel)
+    mail.starttls()
+    mail.login(username, password)
+    mail.sendmail(email_from, email_to, msg.as_string())
+    mail.quit()
+
+
+def SendFinalizedEmail(email_to: str, email_other: str, meeting_title: str, location: str, meeting_time):
+    email_subject = f'MEETING CONFIRMATION: {meeting_title}'
+    co_msg = f'The Meeting: {meeting_title} with {email_other} has been confirmed at {location}, {meeting_time}.\n'
     msg = MIMEText(co_msg)
     msg['Subject'] = email_subject
     msg['From'] = email_from
