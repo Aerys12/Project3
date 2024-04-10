@@ -1,0 +1,59 @@
+.container-custom {
+	display: grid;
+	grid-template-columns:
+		[custom-full-width-start] minmax(0px, 1fr) [content-start] min(100%, 70ch)
+		[content end] minmax(0px, 1fr) [custom-full-width-end];
+}
+
+.container-custom > * {
+	grid-column: content;
+}
+
+.container-custom > .custom-full-width {
+	grid-column: custom-full-width;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
+}
+
+p {
+	text-wrap: pretty;
+}
+.hero {
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+}
+
+.footer {
+	text-align: center;
+	height: 3rem;
+	margin-top: 124px;
+}
+
+.custom-scroller {
+	margin-block: 4rem;
+}
+
+.scroller__inner {
+	width: 100%;
+	overflow-x: scroll;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	display: grid;
+	padding: 2rem 1rem;
+	gap: 1rem;
+	grid-auto-flow: column;
+	justify-items: center;
+	grid-template-columns: repeat(auto-fit, 1fr);
+}
+
+.scroller__inner::-webkit-scrollbar {
+	display: none;
+}
