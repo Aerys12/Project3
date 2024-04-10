@@ -2,12 +2,6 @@ from django.urls import path
 from .views.CalendarViews import CalendarCreateView, CalendarsView, \
     CalendarUpdateView, CalendarDetailsView, CalendarDeleteView
 
-# from .views.meeting_add_view import MeetingAddView
-# from .views.meeting_deletion_view import MeetingDeletionView
-# from .views.meeting_details_view import MeetingDetailsView
-# from .views.meeting_edit_view import MeetingEditView
-# from .views.meetings_view import MeetingsView
-
 from .views.MeetingViews import MeetingCreateView, MeetingDetailsView, \
     MeetingUpdateView, MeetingDeleteView, MeetingTimeSuggestionView, MeetingsView
 
