@@ -16,6 +16,20 @@ export const fetchCalendarData = async () => {
 	return response.json();
 };
 
+export const fetchMeetingData = async () => {
+	const response = await fetch(`${BASE_URL}/Calendar/meetings/all/`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+
+	if (!response.ok) {
+		throw new Error("Network response was not ok");
+	}
+
+	return response.json();
+};
+
 // calendarUtils.js
 
 export const handleDeleteCalendar = async (calendarId: string, onSuccess) => {
@@ -30,6 +44,26 @@ export const handleDeleteCalendar = async (calendarId: string, onSuccess) => {
 
 	if (response.ok) {
 		onSuccess(calendarId);
+	} else {
+	}
+};
+
+// meeting deletion
+export const handleDeleteMeeting = async (calendarId: string, onSuccess) => {
+	if (!calendarId) return;
+
+	const response = await fetch(
+		`${BASE_URL}/Calendar/${calendarId}/meetings/${calendarId}/delete`,
+		{
+			method: "DELETE",
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	);
+
+	if (response.ok) {
+		console.log("Meeting deleted successfully");
 	} else {
 	}
 };

@@ -1,11 +1,15 @@
 "use client";
+
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import React, { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
+import React, { useState, useEffect, useRef, use } from "react";
 import {
 	fetchCalendarData,
 	handleDeleteCalendar,
+	handleDeleteMeeting,
 	shareEmail,
 	shareToContacts,
+	fetchMeetingData,
 } from "./dashboardUtils";
 import { fetchContacts } from "../(auth)/profile/contacts/all/ContactsHandlers";
 
@@ -16,6 +20,14 @@ interface CalendarType {
 	meeting: Array<any>;
 	availability_calendar: Array<any>;
 }
+
+interface meetingType {
+	id: string;
+	calendar: CalendarType;
+	receiver: Contact;
+	receiver_email: string;
+}
+
 interface Contact {
 	id: number;
 	name: string;
@@ -26,13 +38,16 @@ interface Contact {
 export default function Dashboard() {
 	const modalRef = useRef(null);
 	const [calendarData, setCalendarData] = useState<CalendarType[]>([]);
+	const [meetingData, setMeetingData] = useState<meetingType[]>([]);
 	const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(
+		null
+	);
+	const [selectedMeetingId, setSelectedMeetingId] = useState<string | null>(
 		null
 	);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [contacts, setContacts] = useState<Contact[]>([]);
-
 	const [shareData, setShareData] = useState<{
 		receiver: number;
 		receiver_email: string;
@@ -81,6 +96,15 @@ export default function Dashboard() {
 		}
 	};
 
+	const onSucess = (deleteMeetingId: string) => {
+		if (meetingData) {
+			const updatedMeetingData = meetingData.filter(
+				(meeting) => meeting.id !== deleteMeetingId
+			);
+			setMeetingData(updatedMeetingData);
+		}
+	};
+
 	useEffect(() => {
 		fetchCalendarData()
 			.then((data) => {
@@ -89,6 +113,19 @@ export default function Dashboard() {
 			})
 			.catch((error) => {
 				console.error("Error fetching calendar data:", error);
+				setError(error);
+				setLoading(false);
+			});
+	}, []);
+
+	useEffect(() => {
+		fetchMeetingData()
+			.then((data) => {
+				setMeetingData(data);
+				setLoading(false);
+			})
+			.catch((error) => {
+				console.error("Error fetching meeting data:", error);
 				setError(error);
 				setLoading(false);
 			});
@@ -111,10 +148,9 @@ export default function Dashboard() {
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading calendar!</div>;
 	return (
-		<div className='container mt-5 p-4'>
+		<div className='container mt-5 p-4 border border-1'>
 			<h1 className='display-4 text-center text-primary-emphasis'>Calendars</h1>
 			<div className='gap-3 row justify-content-center border border-1 py-4'>
-				{/* Example of listing meetings */}
 				{calendarData &&
 					calendarData.map(
 						(calendar: {
@@ -125,7 +161,7 @@ export default function Dashboard() {
 							availability_calendar: Array<any>;
 						}) => (
 							<div
-								className='col-lg-5 d-flex flex-wrap border border-1'
+								className='col-lg-5 d-flex flex-wrap border border-1 border-danger'
 								key={calendar.id}
 							>
 								<div className='col-1 align-self-center mx-auto'>
@@ -190,22 +226,134 @@ export default function Dashboard() {
 										</div>
 									</div>
 								</div>
-
-								{/* Loop through meetings and display them */}
-								{calendar.meeting.map((meeting) => (
-									<div key={meeting.id}>
-										<p>Meeting with: {meeting.receiver_email}</p>
-										<p>Start time: {meeting.start_time}</p>
-										{/* Additional meeting details */}
-									</div>
-								))}
 							</div>
 						)
 					)}
 			</div>
-			<div className='row gap-3 justify-content-center border border-1 py-4'>
-				<h1 className='display-4 text-primary-emphasis text-center'>Pending</h1>
+			<h1 className='display-4 text-primary-emphasis text-center'>Pending</h1>
+			<div className='gap-3 row justify-content-center border border-1 py-4'>
+				{calendarData &&
+					calendarData.map(
+						(calendar: {
+							id: string;
+							title: string;
+							location: string;
+							meeting: Array<any>;
+							availability_calendar: Array<any>;
+						}) =>
+							calendar.availability_calendar.length > 0 && (
+								<div
+									className='col-lg-5 d-flex flex-wrap border border-1 border-warning'
+									key={calendar.id}
+								>
+									<div className='col-1 align-self-center mx-auto'>
+										<i className='h1 bi bi-person-circle text-warning'></i>
+									</div>
+									<div className='col-10 my-2'>
+										<h4 className='mt-2'>{calendar.title}</h4>
+										<p className='m-1'>
+											<i className='bi bi-calendar3'></i>{" "}
+											{calendar.availability_calendar.length}{" "}
+											{calendar.availability_calendar.length > 1
+												? "options"
+												: "option"}
+										</p>
+										<p className='m-1'>
+											<i className='bi bi-people'></i> 1 : 1
+										</p>
+										<p className='m-1'>
+											<i className='bi bi-geo-alt'></i> {calendar.location}
+										</p>
+										<div className='dropdown'>
+											<div className='d-grid gap-2'>
+												<a
+													className='btn btn-light dropdown-toggle'
+													href='#'
+													role='button'
+													data-bs-toggle='dropdown'
+													aria-expanded='false'
+												>
+													Upcoming
+												</a>
+												<ul className='dropdown-menu dropdown-menu-center w-100'>
+													{calendar.availability_calendar.map(
+														(availability, index) => (
+															<li key={index}>
+																<h6 className='text-center'>
+																	<div>
+																		{`${format(
+																			new Date(availability.start_time),
+																			"MMMM do, yyyy, HH:mm a"
+																		)} - ${format(
+																			new Date(availability.end_time),
+																			"HH:mm a"
+																		)} Preference: ${availability.preference}`}
+																	</div>
+																</h6>
+																{index <
+																	calendar.availability_calendar.length - 1 && (
+																	<hr className='dropdown-divider' />
+																)}
+															</li>
+														)
+													)}
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div className='col-1 align-self-center'>
+										<div className='dropdown'>
+											<div className='d-grid gap-2'>
+												<a
+													className='btn'
+													href='#'
+													role='button'
+													data-bs-toggle='dropdown'
+													aria-expanded='false'
+												>
+													<i className='bi bi-three-dots-vertical'></i>
+												</a>
+												<ul className='dropdown-menu dropdown-menu-end'>
+													<li>
+														<button className='dropdown-item'>Notify</button>
+													</li>
+													<li>
+														<button
+															data-bs-toggle='modal'
+															data-bs-target='#shareMeetingModal'
+															className='dropdown-item'
+														>
+															Details
+														</button>
+													</li>
+													<li>
+														<a
+															className='dropdown-item'
+															href='editCalender.html'
+														>
+															Edit
+														</a>
+													</li>
+													<li>
+														<button
+															data-bs-toggle='modal'
+															data-bs-target='#deleteMeetingModal'
+															className='dropdown-item'
+															onClick={() => setSelectedCalendarId(calendar.id)}
+														>
+															Delete
+														</button>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							)
+					)}
 			</div>
+
+
 			<div
 				className='modal fade'
 				id='shareMeetingModal'
@@ -343,6 +491,7 @@ export default function Dashboard() {
 											handleSuccessfulDeletion
 										);
 									}
+									
 								}}
 							>
 								Delete
