@@ -10,8 +10,6 @@ User = get_user_model()
 
 
 class MeetingCreateSerializer(serializers.ModelSerializer):
-    availability_meeting = MeetingAvailabilityCreateSerializer(many=True,
-                                                               required=False)
 
     class Meta:
         model = Meeting
