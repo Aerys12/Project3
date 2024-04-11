@@ -17,7 +17,7 @@ interface CalendarType {
 	id: string;
 	title: string;
 	location: string;
-	meeting: Array<any>;
+	meeting: Array<meetingType>;
 	availability_calendar: Array<any>;
 }
 
@@ -183,6 +183,42 @@ export default function Dashboard() {
 										<i className='bi bi-geo-alt'></i>
 										{calendar.location}
 									</p>
+									<div className='dropdown'>
+										<div className='d-grid gap-2'>
+											<a
+												className='btn btn-danger dropdown-toggle'
+												href='#'
+												role='button'
+												data-bs-toggle='dropdown'
+												aria-expanded='false'
+											>
+												Upcoming
+											</a>
+											<ul className='dropdown-menu dropdown-menu-center w-100 bg-danger-subtle'>
+												{calendar.availability_calendar.map(
+													(availability, index) => (
+														<li key={index}>
+															<h6 className='text-center'>
+																<div>
+																	{`${format(
+																		new Date(availability.start_time),
+																		"MMMM do, yyyy, HH:mm a"
+																	)} - ${format(
+																		new Date(availability.end_time),
+																		"HH:mm a"
+																	)}`}
+																</div>
+															</h6>
+															{index <
+																calendar.availability_calendar.length - 1 && (
+																<hr className='dropdown-divider' />
+															)}
+														</li>
+													)
+												)}
+											</ul>
+										</div>
+									</div>
 								</div>
 								<div className='col-1 align-self-center'>
 									<div className='dropdown'>
@@ -230,7 +266,7 @@ export default function Dashboard() {
 						)
 					)}
 			</div>
-			<h1 className='display-4 text-primary-emphasis text-center'>Pending</h1>
+			<h1 className='display-4 text-primary-emphasis text-center'>Meetings</h1>
 			<div className='gap-3 row justify-content-center border border-1 py-4'>
 				{calendarData &&
 					calendarData.map(
@@ -241,7 +277,7 @@ export default function Dashboard() {
 							meeting: Array<any>;
 							availability_calendar: Array<any>;
 						}) =>
-							calendar.availability_calendar.length > 0 && (
+							calendar.meeting.length > 0 && (
 								<div
 									className='col-lg-5 d-flex flex-wrap border border-1 border-warning'
 									key={calendar.id}
@@ -267,7 +303,7 @@ export default function Dashboard() {
 										<div className='dropdown'>
 											<div className='d-grid gap-2'>
 												<a
-													className='btn btn-light dropdown-toggle'
+													className='btn btn-warning dropdown-toggle'
 													href='#'
 													role='button'
 													data-bs-toggle='dropdown'
@@ -275,28 +311,20 @@ export default function Dashboard() {
 												>
 													Upcoming
 												</a>
-												<ul className='dropdown-menu dropdown-menu-center w-100'>
-													{calendar.availability_calendar.map(
-														(availability, index) => (
-															<li key={index}>
-																<h6 className='text-center'>
-																	<div>
-																		{`${format(
-																			new Date(availability.start_time),
-																			"MMMM do, yyyy, HH:mm a"
-																		)} - ${format(
-																			new Date(availability.end_time),
-																			"HH:mm a"
-																		)} Preference: ${availability.preference}`}
-																	</div>
-																</h6>
-																{index <
-																	calendar.availability_calendar.length - 1 && (
-																	<hr className='dropdown-divider' />
-																)}
-															</li>
-														)
-													)}
+												<ul className='dropdown-menu dropdown-menu-center w-100 bg-warning-subtle'>
+													{calendar.meeting.map((meeting, index) => (
+														<li key={index}>
+															<h6 className='text-center'>
+																<div>
+																	<p className='lead'>{`Receiver: ${meeting.receiver_email}`}</p>
+																	<p className='lead'>Status: Not approved</p>
+																</div>
+															</h6>
+															{index < calendar.meeting.length - 1 && (
+																<hr className='dropdown-divider' />
+															)}
+														</li>
+													))}
 												</ul>
 											</div>
 										</div>
@@ -352,7 +380,6 @@ export default function Dashboard() {
 							)
 					)}
 			</div>
-
 
 			<div
 				className='modal fade'
@@ -491,7 +518,6 @@ export default function Dashboard() {
 											handleSuccessfulDeletion
 										);
 									}
-									
 								}}
 							>
 								Delete

@@ -49,11 +49,11 @@ export const handleDeleteCalendar = async (calendarId: string, onSuccess) => {
 };
 
 // meeting deletion
-export const handleDeleteMeeting = async (calendarId: string, onSuccess) => {
+export const handleDeleteMeeting = async (calendarId: string, meetingId: string, onSuccess) => {
 	if (!calendarId) return;
 
 	const response = await fetch(
-		`${BASE_URL}/Calendar/${calendarId}/meetings/${calendarId}/delete`,
+		`${BASE_URL}/Calendar/${calendarId}/meetings/${meetingId}/delete`,
 		{
 			method: "DELETE",
 			headers: {
