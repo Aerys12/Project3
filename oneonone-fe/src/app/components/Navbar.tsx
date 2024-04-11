@@ -26,7 +26,9 @@ export default function PrimaryNav() {
 					<Nav>
 						<NavDropdown title='Create' id='collapsible-nav-dropdown'>
 							<NavDropdown.Item href='/Calendar/add'>1on1</NavDropdown.Item>
-							<NavDropdown.Item href='/group'>Group polls</NavDropdown.Item>
+							<NavDropdown.Item href='/Calendar/add'>
+								Group polls
+							</NavDropdown.Item>
 						</NavDropdown>
 						{isLoggedIn ? (
 							<div className='d-flex justify-content-between'>
