@@ -35,7 +35,7 @@ class MeetingCreateView(CreateAPIView):
         except Calendar.DoesNotExist:
             raise NotFound(detail="Calendar not found.")
         meeting = serializer.save(calendar=calendar)
-        inviter = calendar.creator.first_name + " " + calendar.creator.last_name
+        inviter = calendar.creator.first_name + " " + calendar.creator.last_name if calendar.creator.first_name + calendar.creator.last_name != "" else calendar.creator.email
         meeting_title = calendar.title
         url = meeting.url
         print([meeting.receiver_email, inviter, meeting_title, url])
@@ -134,7 +134,7 @@ class MeetingNotifyView(APIView):
             calendar = Calendar.objects.get(id=calendar_id)
             meeting = Meeting.objects.get(id=meeting_id, calendar=calendar)
             email_to = meeting.receiver_email
-            inviter = calendar.creator.first_name + " " + calendar.creator.last_name
+            inviter = calendar.creator.first_name + " " + calendar.creator.last_name if calendar.creator.first_name + calendar.creator.last_name != "" else calendar.creator.email
             meeting_title = calendar.title
             url = meeting.url
 

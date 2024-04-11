@@ -20,7 +20,6 @@ class MeetingCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         meeting = Meeting.objects.create(**validated_data)
-
         base_url = 'http://127.0.0.1:8000'  # Consider using settings to manage domain
         meeting_url = f"{base_url}/Calendar/{meeting.calendar.pk}/meetings/{meeting.id}/details/"
         meeting.url = meeting_url
