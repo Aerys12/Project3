@@ -9,10 +9,7 @@ import {
 } from "./ContactsHandlers";
 
 interface Contact {
-	id: number;
-	name: string;
-	email: string;
-	phone: string;
+	contact: { id: number; contact_full_name: string; contact_email: string };
 }
 
 const ContactsPage = () => {
@@ -24,7 +21,7 @@ const ContactsPage = () => {
 	}>({ contact: null, id: null });
 
 	const handleEditClick = (contact: Contact) => {
-		setEditContactData({ contact, id: contact.id });
+		setEditContactData({ contact, id: contact.contact.id });
 	};
 	const resetEditContactData = () => {
 		setEditContactData({ contact: null, id: null });
@@ -98,7 +95,7 @@ const ContactsPage = () => {
 						<Link
 							className='btn btn-primary text-center'
 							rel='stylesheet'
-							href='/dashboard/contacts/create'
+							href='/profile/contacts/create'
 						>
 							Add
 						</Link>
@@ -120,8 +117,8 @@ const ContactsPage = () => {
 						{contacts.map((contact, index) => (
 							<tr key={contact.id}>
 								<th scope='row'>{index + 1}</th>
-								<td>{contact.name}</td>
-								<td>{contact.email}</td>
+								<td>{contact.contact_full_name}</td>
+								<td>{contact.contact_email}</td>
 								<td className='text-center'>
 									<button
 										type='button'

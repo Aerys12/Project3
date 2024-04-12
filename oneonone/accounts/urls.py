@@ -17,5 +17,6 @@ urlpatterns = [
     path('profile/contacts/all/', profile_contacts_view.ContactListView.as_view() , name='contacts'),
     path('profile/contacts/create/', profile_contact_create_view.ContactCreateView.as_view() , name='create_contact'),
     path('profile/contacts/edit/<int:pk>/', profile_contact_edit_view.ContactUpdateDeleteView.as_view() , name='edit_contact'),
+    path('profile/contacts/search/', profile_contact_create_view.UserEmailSearchView.as_view() , name='search_user')
     
 ]

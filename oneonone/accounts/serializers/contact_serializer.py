@@ -1,22 +1,15 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from accounts.models import Contact
 
 class ContactSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the Contact model.
+    contact_username = serializers.CharField(source='contact.username', read_only=True)
+    contact_full_name = serializers.SerializerMethodField() 
+    contact_email = serializers.CharField(source='contact.email', read_only=True) 
 
-    This serializer is used to convert Contact model instances into JSON
-    representations and vice versa. It specifies the fields to be included
-    in the serialized output and provides validation for the input data.
-
-    Attributes:
-        model (class): The Contact model class.
-        fields (str): A string specifying the fields to be included in the
-            serialized output. The value "__all__" indicates that all fields
-            should be included.
-
-    """
-    owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = Contact
-        fields = "__all__"
+        fields = ['id', 'owner', 'contact', 'contact_username', 'contact_email', 'contact_full_name', 'created_at', 'updated_at']
+    
+    def get_contact_full_name(self, obj):
+        return obj.contact.get_full_name() if obj.contact else "No contact name"

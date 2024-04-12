@@ -42,3 +42,7 @@ export const deleteContact = async (id: number) => {
 		throw error;
 	}
 };
+
+
+
+

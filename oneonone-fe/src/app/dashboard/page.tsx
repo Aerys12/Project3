@@ -30,9 +30,10 @@ interface meetingType {
 
 interface Contact {
 	id: number;
-	name: string;
-	email: string;
-	phone: string;
+	contact_full_name: string;
+	contact_email: string;
+	contact: number;
+	
 }
 
 export default function Dashboard() {
@@ -55,11 +56,11 @@ export default function Dashboard() {
 	const [email, setEmail] = useState("");
 
 	const handleCheckboxChange = (
-		contact: { id: number; email: string },
+		contact: Contact,
 		isChecked: boolean
 	) => {
 		if (isChecked) {
-			setShareData({ receiver: contact.id, receiver_email: contact.email });
+			setShareData({ receiver: contact.contact, receiver_email: contact.contact_email});
 		} else {
 			setShareData(null);
 		}
@@ -455,8 +456,8 @@ export default function Dashboard() {
 														}
 													/>
 												</th>
-												<td>{contact.name}</td>
-												<td>{contact.email}</td>
+												<td>{contact.contact_full_name}</td>
+												<td>{contact.contact_email}</td>
 											</tr>
 										</tbody>
 									))}
