@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { format } from "date-fns";
 import React, { useState, useEffect, useRef, use } from "react";
@@ -26,6 +26,7 @@ interface meetingType {
 	calendar: CalendarType;
 	receiver: Contact;
 	receiver_email: string;
+	status: boolean;
 }
 
 interface Contact {
@@ -33,7 +34,6 @@ interface Contact {
 	contact_full_name: string;
 	contact_email: string;
 	contact: number;
-	
 }
 
 export default function Dashboard() {
@@ -55,12 +55,12 @@ export default function Dashboard() {
 	} | null>(null);
 	const [email, setEmail] = useState("");
 
-	const handleCheckboxChange = (
-		contact: Contact,
-		isChecked: boolean
-	) => {
+	const handleCheckboxChange = (contact: Contact, isChecked: boolean) => {
 		if (isChecked) {
-			setShareData({ receiver: contact.contact, receiver_email: contact.contact_email});
+			setShareData({
+				receiver: contact.contact,
+				receiver_email: contact.contact_email,
+			});
 		} else {
 			setShareData(null);
 		}
@@ -193,7 +193,7 @@ export default function Dashboard() {
 												data-bs-toggle='dropdown'
 												aria-expanded='false'
 											>
-												Upcoming
+												Availabilities
 											</a>
 											<ul className='dropdown-menu dropdown-menu-center w-100 bg-danger-subtle'>
 												{calendar.availability_calendar.map(
@@ -221,9 +221,9 @@ export default function Dashboard() {
 										</div>
 									</div>
 								</div>
-								<div className='col-1 align-self-center'>
+								<div className='align-self-center'>
 									<div className='dropdown'>
-										<div className='d-grid gap-2'>
+										<div className='col-1 d-grid gap-2'>
 											<a
 												className='btn'
 												href='#'
@@ -234,6 +234,12 @@ export default function Dashboard() {
 												<i className='bi bi-three-dots-vertical'></i>
 											</a>
 											<ul className='dropdown-menu dropdown-menu-end'>
+												<Link
+													className='dropdown-item'
+													href={`/dashboard/${calendar.id}`}
+												>
+													<button className='dropdown-item'>Details</button>
+												</Link>
 												<li>
 													<button
 														data-bs-toggle='modal'
@@ -267,31 +273,27 @@ export default function Dashboard() {
 						)
 					)}
 			</div>
-			<h1 className='display-4 text-primary-emphasis text-center'>Meetings</h1>
+			<h1 className='display-4 text-primary-emphasis text-center'>
+				Invitations
+			</h1>
 			<div className='gap-3 row justify-content-center border border-1 py-4'>
-				{calendarData &&
-					calendarData.map(
-						(calendar: {
-							id: string;
-							title: string;
-							location: string;
-							meeting: Array<any>;
-							availability_calendar: Array<any>;
-						}) =>
-							calendar.meeting.length > 0 && (
+				{meetingData &&
+					meetingData.map((meeting: meetingType) => {
+						if (!meeting.status) {
+							return (
 								<div
 									className='col-lg-5 d-flex flex-wrap border border-1 border-warning'
-									key={calendar.id}
+									key={meeting.id}
 								>
 									<div className='col-1 align-self-center mx-auto'>
 										<i className='h1 bi bi-person-circle text-warning'></i>
 									</div>
-									<div className='col-10 my-2'>
-										<h4 className='mt-2'>{calendar.title}</h4>
+									<div className='col-10 p-2 d-flex flex-column justify-content-end align-content-end'>
+										<h3>{meeting.calendar.title}</h3>
 										<p className='m-1'>
 											<i className='bi bi-calendar3'></i>{" "}
-											{calendar.availability_calendar.length}{" "}
-											{calendar.availability_calendar.length > 1
+											{meeting.calendar.availability_calendar.length}{" "}
+											{meeting.calendar.availability_calendar.length > 1
 												? "options"
 												: "option"}
 										</p>
@@ -299,7 +301,8 @@ export default function Dashboard() {
 											<i className='bi bi-people'></i> 1 : 1
 										</p>
 										<p className='m-1'>
-											<i className='bi bi-geo-alt'></i> {calendar.location}
+											<i className='bi bi-geo-alt'></i>
+											{meeting.calendar.location}
 										</p>
 										<div className='dropdown'>
 											<div className='d-grid gap-2'>
@@ -310,29 +313,37 @@ export default function Dashboard() {
 													data-bs-toggle='dropdown'
 													aria-expanded='false'
 												>
-													Upcoming
+													Availabilities
 												</a>
 												<ul className='dropdown-menu dropdown-menu-center w-100 bg-warning-subtle'>
-													{calendar.meeting.map((meeting, index) => (
-														<li key={index}>
-															<h6 className='text-center'>
-																<div>
-																	<p className='lead'>{`Receiver: ${meeting.receiver_email}`}</p>
-																	<p className='lead'>Status: Not approved</p>
-																</div>
-															</h6>
-															{index < calendar.meeting.length - 1 && (
-																<hr className='dropdown-divider' />
-															)}
-														</li>
-													))}
+													{meeting.calendar.availability_calendar.map(
+														(availability, index) => (
+															<li key={index}>
+																<h6 className='text-center'>
+																	<div>
+																		{`${format(
+																			new Date(availability.start_time),
+																			"MMMM do, yyyy, HH:mm a"
+																		)} - ${format(
+																			new Date(availability.end_time),
+																			"HH:mm a"
+																		)}`}
+																	</div>
+																</h6>
+																{index <
+																	meeting.calendar.availability_calendar
+																		.length -
+																		1 && <hr className='dropdown-divider' />}
+															</li>
+														)
+													)}
 												</ul>
 											</div>
 										</div>
 									</div>
-									<div className='col-1 align-self-center'>
+									<div className='align-self-center'>
 										<div className='dropdown'>
-											<div className='d-grid gap-2'>
+											<div className='col-1 d-grid gap-2'>
 												<a
 													className='btn'
 													href='#'
@@ -343,43 +354,20 @@ export default function Dashboard() {
 													<i className='bi bi-three-dots-vertical'></i>
 												</a>
 												<ul className='dropdown-menu dropdown-menu-end'>
-													<li>
-														<button className='dropdown-item'>Notify</button>
-													</li>
-													<li>
-														<button
-															data-bs-toggle='modal'
-															data-bs-target='#shareMeetingModal'
-															className='dropdown-item'
-														>
-															Details
-														</button>
-													</li>
-													<li>
-														<a
-															className='dropdown-item'
-															href='editCalender.html'
-														>
-															Edit
-														</a>
-													</li>
-													<li>
-														<button
-															data-bs-toggle='modal'
-															data-bs-target='#deleteMeetingModal'
-															className='dropdown-item'
-															onClick={() => setSelectedCalendarId(calendar.id)}
-														>
-															Delete
-														</button>
-													</li>
+													<Link
+														className='dropdown-item'
+														href={`/dashboard/schedule/${meeting.id}?calendarId=${meeting.calendar.id}`}
+													>
+														Schedule
+													</Link>
 												</ul>
 											</div>
 										</div>
 									</div>
 								</div>
-							)
-					)}
+							);
+						}
+					})}
 			</div>
 
 			<div
