@@ -89,7 +89,7 @@ export default function Book() {
 						<Link href={`\schedule\${meetingData.id}`}>
 							<div className='btn btn-dark'>Back</div>
 						</Link>
-						<Link href='/final'>
+						<Link href='/dashboard/confirm'>
 							<div className='text-decoration-none btn btn-primary'>
 								Book it
 							</div>

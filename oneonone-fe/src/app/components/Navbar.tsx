@@ -23,7 +23,7 @@ export default function PrimaryNav() {
 							<Nav.Link href='/why'>Why 1on1</Nav.Link>
 						</Nav>
 					)}
-					<Nav>
+					<Nav className="gap-5">
 						<NavDropdown title='Create' id='collapsible-nav-dropdown'>
 							<NavDropdown.Item href='/Calendar/add'>1on1</NavDropdown.Item>
 							<NavDropdown.Item href='/Calendar/add'>
@@ -31,11 +31,12 @@ export default function PrimaryNav() {
 							</NavDropdown.Item>
 						</NavDropdown>
 						{isLoggedIn ? (
-							<div className='d-flex justify-content-between'>
+							<div className='d-flex align-content-center justify-content-between gap-4'>
 								<div className='nav-item'>
 									<Link href='/profile'>
 										<i className='bi bi-person-circle h2 text-primary text-outline-light m-2'></i>
 									</Link>
+									<Link className="nav-item " href="/dashboard">Dashboard</Link>
 								</div>
 								<Button onClick={logout}>Logout</Button>
 							</div>
